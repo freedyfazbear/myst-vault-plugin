@@ -1,0 +1,12 @@
+name: myst-vault-plugin
+main: ru.rusekh.mystvault.MystVaultPlugin
+version: beta
+api-version: 1.16
+
+commands:
+  addvault:
+    permission: "mystvault.admin"
+  removevault:
+    permission: "mystvault.admin"
+  vault:
+  vaultshop:
