@@ -7,9 +7,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import ru.rusekh.mystvault.MystVaultPlugin;
 import ru.rusekh.mystvault.database.UserData;
 import ru.rusekh.mystvault.helper.ChatHelper;
+
+import java.util.Collections;
 
 public class MystVaultInventory
 {
@@ -26,22 +29,16 @@ public class MystVaultInventory
                 .create();
         var userData = vaultPlugin.getUserManager().getUser(player.getUniqueId());
 
-        for (ItemStack itemStack : userData.getVaultContent()) {
+        for (ItemStack itemStack : gui.getInventory().getContents()) {
             if (itemStack == null) continue;
             if (itemStack.getType() == Material.AIR) continue;
 
-            gui.addItem(ItemBuilder.from(itemStack)
-                            .setLore(ChatHelper.parse(vaultPlugin.getConfiguration().itemsLoreName))
-                    .asGuiItem());
-        }
+            ItemMeta meta = itemStack.getItemMeta();
+            meta.setLore(Collections.singletonList(ChatHelper.parse(vaultPlugin.getConfiguration().itemsLoreName)));
+            itemStack.setItemMeta(meta);
 
-        for (int i = 0; i < 54; i++) {
-            for (int j = 0; j < userData.getVaultSlots(); j++) {
-                if (j != i) {
-                    gui.setItem(i, ItemBuilder.from(Material.BARRIER)
-                            .setName(ChatHelper.parse("&cYou need to buy more slots!"))
-                            .asGuiItem(event -> event.setResult(Event.Result.DENY)));
-                }
+            for (int i = 0; i < userData.getVaultSlots(); i++) {
+                gui.setItem(i, ItemBuilder.from(itemStack).asGuiItem());
             }
         }
 

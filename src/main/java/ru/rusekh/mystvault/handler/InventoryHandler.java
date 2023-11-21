@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import ru.rusekh.mystvault.MystVaultPlugin;
 import ru.rusekh.mystvault.helper.ChatHelper;
@@ -27,6 +28,14 @@ public class InventoryHandler implements Listener
 
         if (event.getView().getTitle().equals("Your vault")) {
             var serverData = vaultPlugin.getServerDataManager().getServerData("data");
+
+            var userData = vaultPlugin.getUserManager().getUser(event.getWhoClicked().getUniqueId());
+            for (int i = userData.getVaultSlots() + 1; i < 200; i++) {
+                if (event.getRawSlot() == i && event.getClickedInventory() != null && event.getClickedInventory().getType() != InventoryType.PLAYER) {
+                    ChatHelper.sendMessage(event.getWhoClicked(), "&cYou dont have buyed this slot!");
+                    event.setResult(Event.Result.DENY);
+                }
+            }
 
             for (ItemStack disallowedItem : serverData.getDisallowedItems()) {
                 if (itemStack.isSimilar(disallowedItem)) {
